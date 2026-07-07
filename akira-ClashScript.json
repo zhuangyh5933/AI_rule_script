@@ -1,0 +1,354 @@
+// ==================================================
+// Clash 覆写脚本 (Parser Script)
+// 适用于 Clash Verge / Clash Meta / Mihomo
+// 用法：Clash Verge -> 订阅 -> 右键编辑 -> 脚本 -> 粘贴保存
+// ==================================================
+
+function main(config) {
+  // ── 1. 提取订阅中的所有节点 ──────────────────────────
+  const proxies = config.proxies || [];
+  const proxyNames = proxies.map((p) => p.name);
+
+  if (proxyNames.length === 0) {
+    console.log("[覆写] 未找到任何节点，请检查订阅是否有效");
+  }
+
+  // ── 2. DNS 配置 ──────────────────────────────────────
+  const dns = {
+    enable: true,
+    "cache-algorithm": "arc",
+    listen: "0.0.0.0:1053",
+    ipv6: true,
+    "enhanced-mode": "fake-ip",
+    "fake-ip-range": "198.18.0.1/16",
+    "use-hosts": true,
+    "default-nameserver": ["119.29.29.29", "223.5.5.5"],
+    nameserver: [
+      "https://dh-dns.global-idt.net/dns-query",
+      "https://sm2.doh.pub/dns-query",
+    ],
+    "fake-ip-filter": [
+      "*.lan",
+      "localhost.ptlogin2.qq.com",
+      "dns.msftncsi.com",
+      "*.srv.nintendo.net",
+      "*.stun.playstation.net",
+      "xbox.*.microsoft.com",
+      "*.xboxlive.com",
+      "rule-set:Apple",
+      "rule-set:Microsoft",
+      "rule-set:GoogleFCM",
+      "rule-set:ChinaMAX",
+      "rule-set:Lan",
+    ],
+    fallback: ["1.1.1.1", "8.8.8.8"],
+    "fallback-filter": {
+      geoip: true,
+      "geoip-code": "CN",
+      ipcidr: ["240.0.0.0/4"],
+    },
+  };
+
+  // ── 3. 代理组 ────────────────────────────────────────
+  const proxyGroups = [
+    {
+      name: "Node",
+      type: "select",
+      proxies: ["Auto", ...proxyNames],
+    },
+    {
+      name: "Auto",
+      type: "fallback",
+      proxies: [...proxyNames],
+      url: "http://1.0.0.1",
+      interval: 300,
+    },
+    {
+      name: "Apple",
+      type: "select",
+      proxies: ["DIRECT", "Node", ...proxyNames],
+    },
+    {
+      name: "AI",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "GoogleFCM",
+      type: "select",
+      proxies: ["Node", "DIRECT", ...proxyNames],
+    },
+    {
+      name: "Instagram",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "Spotify",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "Netflix",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "Disney",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "TikTok",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "GlobalMedia",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "Google",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "Microsoft",
+      type: "select",
+      proxies: ["DIRECT", "Node", ...proxyNames],
+    },
+    {
+      name: "SteamCN",
+      type: "select",
+      proxies: ["DIRECT", "Node", ...proxyNames],
+    },
+    {
+      name: "Steam",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+    {
+      name: "PayPal",
+      type: "select",
+      proxies: ["DIRECT", "Node", ...proxyNames],
+    },
+    {
+      name: "Telegram",
+      type: "select",
+      proxies: ["Node", ...proxyNames],
+    },
+  ];
+
+  // ── 4. Rule Providers ────────────────────────────────
+  const ruleProviders = {
+    Apple: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Apple/Apple_Classical_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Apple_No_Resolve.yaml",
+    },
+    Netflix: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Netflix/Netflix_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Netflix_No_Resolve.yaml",
+    },
+    Disney: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Disney/Disney_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Disney_No_Resolve.yaml",
+    },
+    TikTok: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/TikTok_No_Resolve.yaml",
+    },
+    GlobalMedia: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GlobalMedia/GlobalMedia_Classical_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/GlobalMedia_Classical_No_Resolve.yaml",
+    },
+    AI: {
+      type: "http",
+      behavior: "classical",
+      format: "text",
+      url: "https://ruleset.skk.moe/LegacyClashPremium/non_ip/ai.txt",
+      interval: 86400,
+      path: "./ruleset/AI.txt",
+    },
+    Google: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Google_No_Resolve.yaml",
+    },
+    Instagram: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Instagram/Instagram_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Instagram_No_Resolve.yaml",
+    },
+    Spotify: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Spotify/Spotify_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Spotify_No_Resolve.yaml",
+    },
+    Microsoft: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Microsoft/Microsoft_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Microsoft_No_Resolve.yaml",
+    },
+    PayPal: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/PayPal/PayPal_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/PayPal_No_Resolve.yaml",
+    },
+    SteamCN: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/SteamCN/SteamCN_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/SteamCN_No_Resolve.yaml",
+    },
+    Steam: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Steam/Steam_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Steam_No_Resolve.yaml",
+    },
+    GoogleFCM: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GoogleFCM/GoogleFCM_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/GoogleFCM_No_Resolve.yaml",
+    },
+    GameDownloadCN: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Game/GameDownloadCN/GameDownloadCN_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/GameDownloadCN_No_Resolve.yaml",
+    },
+    Lan: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Lan/Lan_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/Lan_No_Resolve.yaml",
+    },
+    ChinaMAX: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@refs/heads/master/rule/Clash/ChinaMaxNoIP/ChinaMaxNoIP_Classical_No_Resolve.yaml",
+      interval: 86400,
+      path: "./ruleset/ChinaMaxNoIP_Classical_No_Resolve.yaml",
+    },
+    ChinaIP: {
+      type: "http",
+      behavior: "classical",
+      url: "https://cdn.jsdelivr.net/gh/DH-Teams/DH-Geo_AS_IP_CN@main/Geo_AS_IP_CN_All_Clash.yaml",
+      interval: 86400,
+      path: "./ruleset/Geo_AS_IP_CN_All_Clash.yaml",
+    },
+  };
+
+  // ── 5. 路由规则 ──────────────────────────────────────
+  const rules = [
+    "RULE-SET,Lan,DIRECT",
+    "IP-CIDR,43.163.8.237/32,DIRECT,no-resolve",
+    "RULE-SET,GameDownloadCN,DIRECT",
+    "RULE-SET,GoogleFCM,GoogleFCM",
+    // Telegram 手动域名/IP 规则
+    "DOMAIN,api.imem.app,Telegram",
+    "DOMAIN,api.swiftgram.app,Telegram",
+    "DOMAIN-SUFFIX,cdn-telegram.org,Telegram",
+    "DOMAIN-SUFFIX,comments.app,Telegram",
+    "DOMAIN-SUFFIX,contest.com,Telegram",
+    "DOMAIN-SUFFIX,graph.org,Telegram",
+    "DOMAIN-SUFFIX,legra.ph,Telegram",
+    "DOMAIN-SUFFIX,mbrx.app,Telegram",
+    "DOMAIN-SUFFIX,quiz.directory,Telegram",
+    "DOMAIN-SUFFIX,stel.com,Telegram",
+    "DOMAIN-SUFFIX,t.me,Telegram",
+    "DOMAIN-SUFFIX,tdesktop.com,Telegram",
+    "DOMAIN-SUFFIX,telega.one,Telegram",
+    "DOMAIN-SUFFIX,telegra.ph,Telegram",
+    "DOMAIN-SUFFIX,telegram-cdn.org,Telegram",
+    "DOMAIN-SUFFIX,telegram.dog,Telegram",
+    "DOMAIN-SUFFIX,telegram.me,Telegram",
+    "DOMAIN-SUFFIX,telegram.org,Telegram",
+    "DOMAIN-SUFFIX,telegram.space,Telegram",
+    "DOMAIN-SUFFIX,telegramdownload.com,Telegram",
+    "DOMAIN-SUFFIX,telesco.pe,Telegram",
+    "DOMAIN-SUFFIX,tg.dev,Telegram",
+    "DOMAIN-SUFFIX,tx.me,Telegram",
+    "DOMAIN-SUFFIX,usercontent.dev,Telegram",
+    "DOMAIN-KEYWORD,nicegram,Telegram",
+    "IP-CIDR,109.239.140.0/24,Telegram,no-resolve",
+    "IP-CIDR,149.154.160.0/20,Telegram,no-resolve",
+    "IP-CIDR,5.28.192.0/18,Telegram,no-resolve",
+    "IP-CIDR,91.108.0.0/16,Telegram,no-resolve",
+    "IP-CIDR6,2001:67c:4e8::/48,Telegram,no-resolve",
+    "IP-CIDR6,2001:b28:f23c::/47,Telegram,no-resolve",
+    "IP-CIDR6,2001:b28:f23f::/48,Telegram,no-resolve",
+    "IP-CIDR6,2a0a:f280::/29,Telegram,no-resolve",
+    // 分流规则
+    "RULE-SET,AI,AI",
+    "RULE-SET,Apple,Apple",
+    "RULE-SET,Netflix,Netflix",
+    "RULE-SET,Instagram,Instagram",
+    "RULE-SET,Spotify,Spotify",
+    "RULE-SET,Disney,Disney",
+    "RULE-SET,TikTok,TikTok",
+    "RULE-SET,SteamCN,SteamCN",
+    "RULE-SET,Steam,Steam",
+    "RULE-SET,Google,Google",
+    "RULE-SET,PayPal,PayPal",
+    "RULE-SET,Microsoft,Microsoft",
+    "RULE-SET,GlobalMedia,GlobalMedia",
+    "RULE-SET,ChinaMAX,DIRECT",
+    "RULE-SET,ChinaIP,DIRECT",
+    "MATCH,Node",
+  ];
+
+  // ── 6. 组装最终配置 ──────────────────────────────────
+  return {
+    port: 7890,
+    "socks-port": 7891,
+    "allow-lan": true,
+    "bind-address": "*",
+    mode: "rule",
+    "log-level": "info",
+    ipv6: true,
+    "unified-delay": true,
+    "tcp-concurrent": true,
+    profile: {
+      "store-selected": true,
+      "store-fake-ip": true,
+    },
+    dns,
+    proxies,
+    "proxy-groups": proxyGroups,
+    "rule-providers": ruleProviders,
+    rules,
+  };
+}

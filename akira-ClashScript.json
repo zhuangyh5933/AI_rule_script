@@ -24,8 +24,8 @@ function main(config) {
     "use-hosts": true,
     "default-nameserver": ["119.29.29.29", "223.5.5.5"],
     nameserver: [
-      "https://dh-dns.global-idt.net/dns-query",
       "https://sm2.doh.pub/dns-query",
+      "https://dns.alidns.com/dns-query",
     ],
     "fake-ip-filter": [
       "*.lan",

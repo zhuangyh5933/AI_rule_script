@@ -274,6 +274,7 @@ function main(config) {
   // ── 5. 路由规则 ──────────────────────────────────────
   const rules = [
     "RULE-SET,Lan,DIRECT",
+    "DOMAIN-SUFFIX,nb-media.xyz,DIRECT",
     "DOMAIN-SUFFIX,starsho-strem.nb-media.xyz,DIRECT",
     "IP-CIDR,43.163.8.237/32,DIRECT,no-resolve",
     "RULE-SET,GameDownloadCN,DIRECT",
